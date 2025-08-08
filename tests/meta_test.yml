@@ -1,0 +1,5 @@
+model_type: "logistic_regression"
+learning_type: "supervised"
+objective_func: "MSE"
+training_accuracy: 0.97245
+comment: "this model was solid."

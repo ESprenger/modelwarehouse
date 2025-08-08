@@ -1,0 +1,26 @@
+[project]
+name = "modelwarehouse"
+version = "0.1.0"
+description = "The description of the package"
+
+license = { text = "MIT" }
+readme = "README.md"
+
+# No python upper bound for package metadata
+requires-python = ">=3.8"
+
+authors = [
+    { name = "Evan Sprenger", email = "evan.sprenger@gmail.com" },
+]
+
+keywords = ["ml", "object database", "persistent", "model storage", "scientific", "data"]
+
+[project.urls]
+repository = "https://github.com/ESprenger/modelwarehouse"
+homepage = "https://github.com/ESprenger/modelwarehouse"
+
+[tool.poetry.dependencies]
+# Python upper bound for locking
+python = ">=3.9,<4.0"
+# Version-specific dependencies with prereleases allowed
+tomli = { allow-prereleases = true }
