@@ -5,18 +5,10 @@ authors = [{ name = "Evan Sprenger", email = "evan.sprenger@gmail.com" }]
 license = { text = "MIT" }
 readme = "README.md"
 dynamic = ["version"]
+keywords = ["ml", "object database", "persistent", "model storage", "scientific", "data"]
 
 # Use .python-version
 # requires-python = ">=3.12"
-
-keywords = ["ml", "object database", "persistent", "model storage", "scientific", "data"]
-
-[project.urls]
-repository = "https://github.com/ESprenger/modelwarehouse"
-homepage = "https://github.com/ESprenger/modelwarehouse"
-
-[tool.setuptools.dynamic]
-version = {attr = "modelwarehouse.__version__"}
 
 dependencies = [
     "btrees>=5.0",
@@ -31,6 +23,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "basedpyright>=1.37.1",
     "black>=25.12.0",
     "debugpy>=1.8.19",
     "ipykernel>=7.1.0",
@@ -39,10 +32,13 @@ dev = [
     "nodejs>=0.1.1",
     "poetry>=2.2.1",
     "pylint>=4.0.4",
-    "pyright>=1.1.407",
     "pytest>=9.0.2",
     "python-lsp-server>=1.14.0",
 ]
+
+[project.urls]
+repository = "https://github.com/ESprenger/modelwarehouse"
+homepage = "https://github.com/ESprenger/modelwarehouse"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -50,4 +46,5 @@ where = ["src"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 
-
+[tool.setuptools.dynamic]
+version = {attr = "modelwarehouse.__version__"}
