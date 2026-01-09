@@ -1,17 +1,13 @@
 [project]
 name = "modelwarehouse"
-version = "0.1.0"
-description = "The description of the package"
-
+description = "Object database for storage/retrieval of persistent ML models."
+authors = [{ name = "Evan Sprenger", email = "evan.sprenger@gmail.com" }]
 license = { text = "MIT" }
 readme = "README.md"
+dynamic = ["version"]
 
-# No python upper bound for package metadata
-requires-python = ">=3.8"
-
-authors = [
-    { name = "Evan Sprenger", email = "evan.sprenger@gmail.com" },
-]
+# Use .python-version
+# requires-python = ">=3.12"
 
 keywords = ["ml", "object database", "persistent", "model storage", "scientific", "data"]
 
@@ -19,8 +15,39 @@ keywords = ["ml", "object database", "persistent", "model storage", "scientific"
 repository = "https://github.com/ESprenger/modelwarehouse"
 homepage = "https://github.com/ESprenger/modelwarehouse"
 
-[tool.poetry.dependencies]
-# Python upper bound for locking
-python = ">=3.9,<4.0"
-# Version-specific dependencies with prereleases allowed
-tomli = { allow-prereleases = true }
+[tool.setuptools.dynamic]
+version = {attr = "modelwarehouse.__version__"}
+
+dependencies = [
+    "btrees>=5.0",
+    "numpy>=2.4.0",
+    "pandas>=2.3.3",
+    "persistent>=5.0",
+    "relstorage>=4.2.0",
+    "transaction>=5.0",
+    "zconfig>=4.3",
+    "zodb>=6.1",
+]
+
+[dependency-groups]
+dev = [
+    "black>=25.12.0",
+    "debugpy>=1.8.19",
+    "ipykernel>=7.1.0",
+    "ipywidgets>=8.1.8",
+    "jupyterlab>=4.5.1",
+    "nodejs>=0.1.1",
+    "poetry>=2.2.1",
+    "pylint>=4.0.4",
+    "pyright>=1.1.407",
+    "pytest>=9.0.2",
+    "python-lsp-server>=1.14.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
+
