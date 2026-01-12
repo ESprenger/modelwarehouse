@@ -3,18 +3,15 @@ from __future__ import annotations
 from types import NoneType
 
 import pytest
-from modelwarehouse.database import ConnectionManager
+from src.modelwarehouse.database import ConnectionManager
 from persistent.mapping import PersistentMapping
 from ZConfig import ConfigurationSyntaxError
 from ZODB.Connection import Connection
 from ZODB.DB import DB
 
-from .util import TEST_PATH, gen_test_path
-
-
 @pytest.fixture
 def base_manager_fs() -> ConnectionManager:
-    return ConnectionManager(gen_test_path("test_db.fs"), "test.log", TEST_PATH, False)
+    return ConnectionManager("./tests/resources/test_db.fs", "test.log", "./tests/resources", False)
 
 
 class TestConnectionManager:
@@ -46,15 +43,15 @@ class TestConnectionManager:
     @pytest.mark.parametrize(
         "config_path,expectation",
         [
-            (gen_test_path("bad_config_a.tmpl"), pytest.raises(ValueError)),
-            (gen_test_path("bad_config_b.tmpl"), pytest.raises(ValueError)),
+            ("./tests/resources/bad_config_a.tmpl", pytest.raises(ValueError)),
+            ("./tests/resources/bad_config_b.tmpl", pytest.raises(ValueError)),
             (
-                gen_test_path("valid_config.tmpl"),
+                "./tests/resources/valid_config.tmpl",
                 pytest.raises(ConfigurationSyntaxError),  # Pass assesrtions
             ),
         ],
     )
     def test_check_config_validity(self, config_path, expectation):
-        conn = ConnectionManager(config_path, "test.log", TEST_PATH, False)
+        conn = ConnectionManager(config_path, "test.log", "./tests/resources", False)
         with expectation:
             assert conn.create_db_connection() is not None

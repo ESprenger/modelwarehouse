@@ -4,20 +4,21 @@ import numpy as np
 import pandas as pd
 import pytest
 from BTrees.IOBTree import IOBTree
-from modelwarehouse.controller import Depot
-from modelwarehouse.structures.core import Model, Project
-from modelwarehouse.utils.core import produce_hash
+from src.modelwarehouse.utils import produce_hash
+from src.modelwarehouse.controller import Depot
+from src.modelwarehouse.structures import Model, Project
 
-from .util import clear_filestorage, gen_test_path, TEST_PATH
+
+from .util import clear_filestorage
 
 
 @pytest.fixture(scope="module")
 def pre_depot() -> Depot:
     clear_filestorage()
     return Depot(
-        path_to_configuration=gen_test_path("test_db.fs"),
+        path_to_configuration="./tests/resources/test_db.fs",
         log_filename="test.log",
-        log_filepath=TEST_PATH,
+        log_filepath="./tests/resources",
     )
 
 
@@ -26,7 +27,7 @@ def model_a() -> Model:
     return Model(
         model_object=pd.DataFrame([[1, 2], [3, 4]], columns=["a", "b"]),
         project_name="test_project",
-        meta_data=gen_test_path("meta_test.yml"),
+        meta_data="./tests/resources/meta_test.yml",
     )
 
 
@@ -62,9 +63,9 @@ def project_b() -> Project:
 def post_depot() -> Depot:
     clear_filestorage("test_db_v2")
     dep = Depot(
-        path_to_configuration=gen_test_path("test_db_v2.fs"),
+        path_to_configuration="./tests/test_db_v2.fs",
         log_filename="test.log",
-        log_filepath=TEST_PATH,
+        log_filepath="./tests/resources",
     )
     return dep
 
@@ -132,14 +133,17 @@ class TestHandlerDepotSimple:
         second_project_id = produce_hash(model_c.project_name)
         pre_depot.add_project(project_b)
         pre_depot.add_model(model_c)
+
         pre_depot.move_model_to_project(model_c.id, "test_project")
         assert pre_depot.projects[second_project_id].get_field("models") == []
         assert model_c.id not in pre_depot.models
 
     def test_remove_existing_project(self, pre_depot, project_a):
+        # import pdb; pdb.set_trace()
         project_a_id = project_a.id
         model_ids = pre_depot.projects[project_a_id].get_field("models")
         pre_depot.remove_project(project_a_id)
+
         assert project_a_id not in pre_depot.projects
         for model_id in model_ids:
             assert model_id not in pre_depot.models

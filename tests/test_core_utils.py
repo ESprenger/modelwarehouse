@@ -4,15 +4,17 @@ import sys
 from datetime import datetime
 from operator import eq, ge, gt, le, lt
 from pathlib import Path
+import os
 
 import numpy as np
 import pandas as pd
 import pytest
-from modelwarehouse.utils.core import (
+from src.modelwarehouse.utils import (
     _json_dumps,
     _resolve_type,
     infer_obj_module,
     resolve_search,
+    MWLogger
 )
 
 from .util import Case
@@ -100,3 +102,26 @@ class TestJsonDumps:
     @pytest.mark.parametrize("test_case", resolve_json_dump_cases, ids=lambda tc: tc.id)
     def test_output(self, test_case):
         assert _json_dumps(test_case.val) == test_case.expected_result
+
+class TestLogger:
+    def test_invalid_args(self):
+        with pytest.raises(KeyError):
+            MWLogger("some_log_file", None, "invalid")
+
+    def test_filename_format(self):
+        logger = MWLogger("some_log_file", "./tests/resources")
+        assert Path(logger.handler.baseFilename).name == "some_log_file.log"
+        assert logger.handler.baseFilename.split("/")[-3:] == [
+            "tests",
+            "resources",
+            "some_log_file.log"
+        ]
+
+    def test_custom_logging_path(self):
+        TEST_FILEPATH = os.path.join(os.path.dirname(__file__),"resources")
+        logger = MWLogger("some_log_file", TEST_FILEPATH)
+        assert logger.handler.baseFilename.split("/")[-3:] == [
+            "tests",
+            "resources",
+            "some_log_file.log"
+        ]

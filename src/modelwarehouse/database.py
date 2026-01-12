@@ -3,11 +3,12 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Optional, Union
 
-from persistent.mapping import PersistentMapping
 import relstorage
 import transaction
-from modelwarehouse.utils.logging import MWLogger
+from persistent.mapping import PersistentMapping
 from ZODB import DB, Connection, FileStorage, config
+
+from modelwarehouse.utils import MWLogger
 
 
 class ConnectionManager:

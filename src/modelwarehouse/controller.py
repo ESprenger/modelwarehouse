@@ -6,9 +6,8 @@ from typing import Any, Iterable, List, Optional, Tuple
 
 from BTrees.IOBTree import IOBTree
 from modelwarehouse.database import ConnectionManager
-from modelwarehouse.structures.core import Model, Project
-from modelwarehouse.utils.core import produce_hash, resolve_search
-from modelwarehouse.utils.logging import MWLogger
+from modelwarehouse.structures import Model, Project
+from modelwarehouse.utils import MWLogger, produce_hash, resolve_search
 
 
 def safe_transaction(supress_abort: bool = False):
@@ -28,7 +27,7 @@ def safe_transaction(supress_abort: bool = False):
                 fn(depot, *args, **kwargs)
                 depot.conn_manager.commit()
                 depot.logger.append.info(
-                    f"Successful COMMIT - {fn} - {args} - {["{}={}".format(*items) for items in kwargs.items()]}"
+                    f"Successful COMMIT - {fn} - {args} - {['{}={}'.format(*items) for items in kwargs.items()]}"
                 )
             except Exception as err:
                 if not supress_abort:
@@ -243,8 +242,8 @@ class Depot:
         for model_id in self.projects[project_id].get_field("models"):
             if move_to_new_project:
                 self.move_model_to_project(model_id, move_to_new_project)
-                continue
-            self.remove_model(model_id)
+            else:
+                self.remove_model(model_id)
 
         del self.projects[project_id]
         self.logger.append.info(f"Remove project - {project_id}")
@@ -308,7 +307,6 @@ class Depot:
         >>> my_depot.move_model_to_project(model_id=model_2_move, new_project=new_project_name)
 
         """
-
         existing_model = self.models[model_id]
         new_project = (
             new_project

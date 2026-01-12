@@ -10,7 +10,7 @@ from typing import Any, ClassVar, Iterable, List, Optional, Tuple, Union
 import pandas as pd
 import persistent
 import yaml
-from modelwarehouse.utils.core import infer_obj_module, produce_hash
+from modelwarehouse.utils import infer_obj_module, produce_hash
 
 
 class DataObject(persistent.Persistent):
@@ -24,7 +24,10 @@ class DataObject(persistent.Persistent):
         return self._eval_hash()
 
     def get_field(self, key: str) -> Any:
-        return self[key]
+        val = self[key]
+        if isinstance(val,list):
+            return val.copy()
+        return val
 
     def update_field(self, key: str, val: Any) -> None:
         self[key] = val
@@ -192,8 +195,9 @@ class Model(DataObject):
     )
 
     def __post_init__(self):
-        if not isinstance(self.meta_data, ModelMeta):
+        if isinstance(self.meta_data,(str, dict)):
             self.update_field("meta_data", ModelMeta(self.meta_data))
+
         self.meta_data.update_field(
             "model_library", infer_obj_module(self.model_object)
         )

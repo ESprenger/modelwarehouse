@@ -2,13 +2,11 @@ from __future__ import annotations
 
 from datetime import datetime
 
-import os
 import numpy as np
 import pandas as pd
 import pytest
-from modelwarehouse.structures.core import DataObject, Model, ModelMeta, Project
-from modelwarehouse.utils.core import produce_hash
-from .util import gen_test_path, TEST_PATH
+from src.modelwarehouse.structures import DataObject, Model, ModelMeta, Project
+from src.modelwarehouse.utils import produce_hash
 
 
 @pytest.fixture
@@ -25,7 +23,7 @@ def base_model_meta() -> ModelMeta:
 
 @pytest.fixture
 def yaml_model_meta() -> ModelMeta:
-    return ModelMeta(gen_test_path("meta_test.yml"))
+    return ModelMeta("./tests/resources/meta_test.yml")
 
 
 @pytest.fixture
@@ -74,6 +72,7 @@ class TestBaseObject:
             == "'DataObject' type does not have attribute - 'invalid_attr' !"
         )
 
+
     def test_update_field_invalid(self, base_object):
         with pytest.raises(AttributeError) as excinfo:
             base_object.update_field("invalid_attr", None)
@@ -107,6 +106,11 @@ class TestModelMetaObject:
 
 
 class TestModelObject:
+    def test_model_construction(self):
+        existing_meta = ModelMeta({"learning_type":"supervised","model_library":"numpy","model_type":"logistic regression"})
+        new_model = Model(project_name="something",meta_data=existing_meta,model_object=np.array([1,2,3,4]))
+
+
     def test_hash_cmp(self, base_model_a, base_model_b):
 
         assert base_model_a.id == produce_hash(

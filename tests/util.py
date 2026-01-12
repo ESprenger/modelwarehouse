@@ -5,8 +5,6 @@ import os
 from dataclasses import dataclass, field
 from typing import Any
 
-from tests import TEST_PATH
-
 
 @dataclass
 class Case:
@@ -19,12 +17,8 @@ class Case:
 
 
 def clear_filestorage(stub="test_db"):
-    for file in glob.glob(f"./test/{stub}.fs*"):
+    for file in glob.glob(f"./tests/resources/{stub}.fs*"):
         try:
             os.remove(file)
         except OSError as err:
             print(err)
-
-
-def gen_test_path(val: str) -> str:
-    return os.path.join(TEST_PATH, val)

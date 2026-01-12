@@ -1,5 +1,6 @@
 import hashlib
 import json
+import logging
 import re
 import sys
 from ast import literal_eval
@@ -7,9 +8,99 @@ from ctypes import c_int32
 from datetime import datetime
 from inspect import getmodule
 from operator import eq, ge, gt, le, lt
+from pathlib import Path
 from typing import Any, Callable, Dict, Tuple, Union
 
+
 from pandas import Timestamp, to_datetime
+
+_op_lookup: Dict[str, Callable] = {">": gt, "<": lt, ">=": ge, "<=": le, "==": eq}
+
+_level_dict: dict = {
+    "notset": logging.NOTSET,
+    "debug": logging.DEBUG,
+    "info": logging.INFO,
+    "warning": logging.WARNING,
+    "error": logging.ERROR,
+    "critical": logging.CRITICAL,
+}
+
+
+class MWLogger:
+    """
+    A class for core logging for ModelWarehouse.
+
+    ...
+
+    Attributes
+    ----------
+    logger : logging.Logger
+        core logging object
+    handler : logging.FileHandler
+        file oriented logging handler
+
+    """
+
+    def __init__(
+        self,
+        filename: str,
+        filepath: Union[str, Path],
+        level: str = "warning",
+    ) -> None:
+        """Init for Logger object.
+
+        Parameters
+        ----------
+        filename : str
+            name of logging file
+        filepath : Path
+            filepath (str | Path) to logging file directory
+        level : str
+            set max debugging level. defaults to "warning"
+
+        """
+
+        logging.basicConfig(
+            level=self._return_level(level),
+            format="%(asctime)s - %(levelname)s : %(message)s",
+        )
+
+        self.logger = logging.getLogger(__name__)
+        self.logger.handlers.clear()
+        self.handler = logging.FileHandler(
+            self._define_filepath(filename, filepath), mode="a"
+        )
+        self.handler.setFormatter(
+            logging.Formatter("%(asctime)s - %(levelname)s : %(message)s")
+        )
+        self.logger.addHandler(self.handler)
+
+    def _return_level(self, level: str):
+        try:
+            return _level_dict[level.lower()]
+        except Exception as _:
+            raise KeyError(
+                "Valid inputs for 'level' - notset,debug,info,warning,error,critical !"
+            )
+
+    def _define_filepath(self, filename: str, filepath: Union[str,Path]) -> str:
+        filename = f"{filename}" if filename.endswith(".log") else f"{filename}.log"
+        filepath = Path(filepath)
+        return str(filepath / filename)
+
+    @property
+    def append(self):
+        """Return logging.Logger object
+
+        Examples
+        --------
+
+        myLogger.append.error(...)
+        myLogger.append.debug(...)
+
+        """
+
+        return self.logger
 
 
 def infer_obj_module(model_object: Any) -> str:
@@ -35,9 +126,6 @@ def infer_obj_module(model_object: Any) -> str:
         return (mod_match.group(1).split(" ")[1]).replace("'", "").split(".")[0]
 
     return type_match[0] if len(type_match) > 1 else "builtins"
-
-
-_op_lookup: Dict[str, Callable] = {">": gt, "<": lt, ">=": ge, "<=": le, "==": eq}
 
 
 def _resolve_type(val: str) -> Any:
