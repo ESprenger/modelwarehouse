@@ -39,7 +39,7 @@ def base_model_a() -> Model:
 def base_model_b() -> Model:
     return Model(
         meta_data={},
-        model_object=pd.DataFrame(np.array([[1, 2], [3, 4]]), columns=["a", "b"]),
+        model_object=pd.DataFrame(data=np.array([[1, 2], [3, 4]]), columns=["a", "b"]),
         project_name="a_different_test",
     )
 

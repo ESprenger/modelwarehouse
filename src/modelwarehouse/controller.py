@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Iterable, List, Optional, Tuple
 
 from BTrees.IOBTree import IOBTree
+
 from modelwarehouse.database import ConnectionManager
 from modelwarehouse.structures import Model, Project
 from modelwarehouse.utils import MWLogger, produce_hash, resolve_search

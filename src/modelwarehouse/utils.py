@@ -11,7 +11,6 @@ from operator import eq, ge, gt, le, lt
 from pathlib import Path
 from typing import Any, Callable, Dict, Tuple, Union
 
-
 from pandas import Timestamp, to_datetime
 
 _op_lookup: Dict[str, Callable] = {">": gt, "<": lt, ">=": ge, "<=": le, "==": eq}
@@ -83,7 +82,7 @@ class MWLogger:
                 "Valid inputs for 'level' - notset,debug,info,warning,error,critical !"
             )
 
-    def _define_filepath(self, filename: str, filepath: Union[str,Path]) -> str:
+    def _define_filepath(self, filename: str, filepath: Union[str, Path]) -> str:
         filename = f"{filename}" if filename.endswith(".log") else f"{filename}.log"
         filepath = Path(filepath)
         return str(filepath / filename)

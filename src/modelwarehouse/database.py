@@ -3,7 +3,6 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Optional, Union
 
-import relstorage
 import transaction
 from persistent.mapping import PersistentMapping
 from ZODB import DB, Connection, FileStorage, config
@@ -105,7 +104,7 @@ class ConnectionManager:
                     self._db = config.databaseFromURL(str(self._config_path))
             self._conn = self._db.open()
             self._root = self._conn.root()
-            self.logger.append.info(f"DB CONNECTED.")
+            self.logger.append.info("DB CONNECTED.")
         except Exception as e:
             self.logger.append.error(e, exc_info=True)
             raise e
@@ -184,4 +183,4 @@ class ConnectionManager:
             except AttributeError as e:
                 self.logger.append.error(e, exc_info=True)
             else:
-                self.logger.append.info(f"DB CLOSED.")
+                self.logger.append.info("DB CLOSED.")

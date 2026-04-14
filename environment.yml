@@ -1,6 +1,6 @@
 name: modelwarehouse_venv
 
-channels:  
+channels: 
   - conda-forge
   - defaults
 
@@ -17,4 +17,4 @@ dependencies:
   - zconfig
   - python-dotenv
   - pip:
-    - relstorage
+      - relstorage
