@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from src.modelwarehouse.utils import (
-    _json_dumps,
+    _convert_vals,
     _resolve_type,
     infer_obj_module,
     resolve_search,
@@ -83,25 +83,25 @@ class TestResolveSearch:
         assert resolve_search(test_case.val) == test_case.expected_result
 
 
-resolve_json_dump_cases = [
+resolve_convert_val_cases = [
     Case(
         datetime(2025, 1, 1, 4, 4, 4),
-        '"{}"'.format(datetime(2025, 1, 1, 4, 4, 4).isoformat(timespec="microseconds")),
+        '{}'.format(datetime(2025, 1, 1, 4, 4, 4).isoformat(timespec="microseconds")),
     ),
-    Case(5, "5"),
-    Case(7.46, "7.46"),
-    Case(("something", 5, 7.46), '["something", 5, 7.46]'),
+    Case(5, 5),
+    Case(7.46, 7.46),
+    Case(("something", 5, 7.46), ("something", 5, 7.46)),
     Case(
         pd.DataFrame([[1, 2]], columns=["a", "b"]),
-        f"{sys.getsizeof(pd.DataFrame([[1,2]],columns=['a','b']))}",
+        (sys.getsizeof(pd.DataFrame([[1,2]],columns=['a','b']))),
     ),
 ]
 
 
-class TestJsonDumps:
-    @pytest.mark.parametrize("test_case", resolve_json_dump_cases, ids=lambda tc: tc.id)
+class TestConvertVals:
+    @pytest.mark.parametrize("test_case", resolve_convert_val_cases, ids=lambda tc: tc.id)
     def test_output(self, test_case):
-        assert _json_dumps(test_case.val) == test_case.expected_result
+        assert _convert_vals(test_case.val) == test_case.expected_result
 
 class TestLogger:
     def test_invalid_args(self):

@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 import pytest
-from BTrees.IOBTree import IOBTree
+from BTrees.LOBTree import LOBTree
 from src.modelwarehouse.utils import produce_hash
 from src.modelwarehouse.controller import Depot
 from src.modelwarehouse.structures import Model, Project
@@ -72,8 +72,8 @@ def post_depot() -> Depot:
 
 class TestHandlerDepotSimple:
     def test_root_object_init(self, pre_depot):
-        assert isinstance(pre_depot.models, IOBTree)
-        assert isinstance(pre_depot.projects, IOBTree)
+        assert isinstance(pre_depot.models, LOBTree)
+        assert isinstance(pre_depot.projects, LOBTree)
 
     def test_add_model_no_project(self, pre_depot, model_a):
         pre_depot.add_model(model_a)
@@ -139,7 +139,6 @@ class TestHandlerDepotSimple:
         assert model_c.id not in pre_depot.models
 
     def test_remove_existing_project(self, pre_depot, project_a):
-        # import pdb; pdb.set_trace()
         project_a_id = project_a.id
         model_ids = pre_depot.projects[project_a_id].get_field("models")
         pre_depot.remove_project(project_a_id)

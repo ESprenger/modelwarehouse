@@ -1,10 +1,9 @@
 import hashlib
-import json
 import logging
+import pickle
 import re
 import sys
 from ast import literal_eval
-from ctypes import c_int32
 from datetime import datetime
 from inspect import getmodule
 from operator import eq, ge, gt, le, lt
@@ -128,6 +127,7 @@ def infer_obj_module(model_object: Any) -> str:
 
 
 def _resolve_type(val: str) -> Any:
+
     """Typecasting string to its literal type.
 
     Parameters
@@ -173,7 +173,7 @@ def resolve_search(val: Any) -> Tuple[Callable, Any]:
     return _op_lookup[cmp], _resolve_type(val)
 
 
-def _json_default(val: Any) -> Union[Tuple, Any]:
+def _convert_vals(val: Any) -> Union[Tuple, Any]:
     """Convert literals to types that can be processed by Json.
 
     Parameters
@@ -189,7 +189,7 @@ def _json_default(val: Any) -> Union[Tuple, Any]:
     """
 
     if isinstance(val, tuple):
-        return tuple(map(_json_default, val))
+        return tuple(map(_convert_vals, val))
     elif isinstance(val, str | int | float):
         return val
     elif isinstance(val, Timestamp | datetime):
@@ -198,28 +198,9 @@ def _json_default(val: Any) -> Union[Tuple, Any]:
         return sys.getsizeof(val)
 
 
-def _json_dumps(val: Tuple | Any) -> str:
-    """Convert value into JSON formatted string.
-
-    Parameters
-    ----------
-    val : Tuple | Any
-        Either Tuple of literal(s) or single literal.
-
-    Returns
-    -------
-    str
-        Formatted string.
-
-    """
-    return json.dumps(val, default=_json_default)
-
-
 def produce_hash(val: Tuple | Any) -> int:
-    """Converts value into JSON formatted string, then converts to md5 hash,
-       and then finally converts to C type 32 bit integer.  Used as a
-       deterministic hashing function that is consistent across python
-       instances.
+    """Converts value into tuple of native, immutable types.  
+       Pickles tuple and returns 64 bit integer.
 
     Parameters
     ----------
@@ -229,10 +210,13 @@ def produce_hash(val: Tuple | Any) -> int:
     Returns
     -------
     int
-        32 bit Integer
+        64 bit Integer
 
     """
     val = val if isinstance(val, tuple) else (val,)
-    return c_int32(
-        int(hashlib.md5(_json_dumps(val).encode("utf-8")).digest().hex(), 16)
-    ).value
+    return int.from_bytes(
+        hashlib.blake2b(
+            pickle.dumps(_convert_vals(val), protocol=5), digest_size=8
+        ).digest(),
+        "big",
+    )

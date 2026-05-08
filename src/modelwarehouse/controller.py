@@ -4,7 +4,7 @@ import functools
 from pathlib import Path
 from typing import Any, Iterable, List, Optional, Tuple
 
-from BTrees.IOBTree import IOBTree
+from BTrees.LOBTree import LOBTree
 
 from modelwarehouse.database import ConnectionManager
 from modelwarehouse.structures import Model, Project
@@ -100,7 +100,7 @@ class Depot:
     def _init_root_object(self, key: str) -> None:
         if key in self.conn_manager.root:
             raise KeyError(f"Tree '{key}' already exists !")
-        self.conn_manager.root[key] = IOBTree()
+        self.conn_manager.root[key] = LOBTree()
 
     def reset_connection(self) -> None:
         """Reset database connection through 'conn_manager' field"""
@@ -388,23 +388,23 @@ class Depot:
         return tree.items() if include_values else tree.keys()
 
     @property
-    def projects(self) -> IOBTree:
+    def projects(self) -> LOBTree:
         """Return 'projects' BTree from database
 
         Returns
         -------
-        IOBTree
+        LOBTree
 
         """
         return self.conn_manager.root["projects"]
 
     @property
-    def models(self) -> IOBTree:
+    def models(self) -> LOBTree:
         """Return 'models' BTree from database
 
         Returns
         -------
-        IOBTree
+        LOBTree
 
         """
         return self.conn_manager.root["models"]
